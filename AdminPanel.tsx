@@ -84,6 +84,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onUpdate }) => {
     setActiveTab('manage');
   };
 
+  const handleSettingsSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await saveSiteSettings(settingsForm);
+      alert('Settings Saved! Your site will update instantly.');
+    } catch (e) {
+      alert('Error saving settings.');
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="flex justify-center py-20 px-4">
@@ -103,6 +113,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onUpdate }) => {
       <div className="bg-[#000080] text-white p-4 flex flex-wrap gap-2 justify-between items-center">
         <h2 className="text-lg font-black uppercase italic tracking-tighter">SARKARI CONTROL CENTER</h2>
         <div className="flex gap-2">
+          <button onClick={() => setActiveTab('settings')} className={`px-4 py-2 rounded font-black text-[10px] uppercase ${activeTab === 'settings' ? 'bg-yellow-400 text-black' : 'bg-white/10'}`}>⚙️ Settings</button>
           <button onClick={handleDiscoverJobs} className="bg-yellow-500 text-black px-4 py-2 rounded font-black text-[10px] uppercase hover:bg-yellow-400">🔍 AI Discover</button>
           <button onClick={() => setActiveTab('create')} className={`px-4 py-2 rounded font-black text-[10px] uppercase ${activeTab === 'create' ? 'bg-[#ff0000]' : 'bg-white/10'}`}>Add New</button>
           <button onClick={() => setActiveTab('manage')} className={`px-4 py-2 rounded font-black text-[10px] uppercase ${activeTab === 'manage' ? 'bg-[#ff0000]' : 'bg-white/10'}`}>Live Jobs</button>
@@ -110,6 +121,55 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onUpdate }) => {
       </div>
 
       <div className="p-4 md:p-8">
+        {activeTab === 'settings' && (
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl font-black text-[#000080] mb-6 uppercase border-b-4 border-[#ff0000] inline-block">Website Configuration</h3>
+            
+            <form onSubmit={handleSettingsSave} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Site Identity */}
+                <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200 space-y-4">
+                  <h4 className="font-black text-[#ff0000] uppercase text-sm mb-4">Site Identity (नाम और टेक्स्ट)</h4>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase mb-1">Website Name</label>
+                    <input type="text" className="w-full p-3 border-2 rounded font-bold" value={settingsForm.siteName} onChange={(e) => setSettingsForm({...settingsForm, siteName: e.target.value})} placeholder="e.g. SARKARI EXAM LIVE" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase mb-1">Footer Text / Domain Name</label>
+                    <input type="text" className="w-full p-3 border-2 rounded font-bold" value={settingsForm.footerText} onChange={(e) => setSettingsForm({...settingsForm, footerText: e.target.value})} placeholder="e.g. WWW.SARKARIEXAMLIVE.COM" />
+                  </div>
+                </div>
+
+                {/* Social Links */}
+                <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200 space-y-4">
+                  <h4 className="font-black text-[#24A1DE] uppercase text-sm mb-4">Social Links (सोशल मीडिया)</h4>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase mb-1">Telegram Link</label>
+                    <input type="text" className="w-full p-3 border-2 rounded font-bold" value={settingsForm.telegramLink} onChange={(e) => setSettingsForm({...settingsForm, telegramLink: e.target.value})} placeholder="https://t.me/..." />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase mb-1">WhatsApp Group Link</label>
+                    <input type="text" className="w-full p-3 border-2 rounded font-bold" value={settingsForm.whatsappLink} onChange={(e) => setSettingsForm({...settingsForm, whatsappLink: e.target.value})} placeholder="https://chat.whatsapp.com/..." />
+                  </div>
+                </div>
+              </div>
+
+              {/* Ads Settings */}
+              <div className="bg-blue-50 p-6 rounded-xl border-2 border-blue-200 space-y-4">
+                  <h4 className="font-black text-blue-800 uppercase text-sm mb-4">Google AdSense (Optional)</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" className="w-full p-3 border-2 rounded font-bold" value={settingsForm.publisherId} onChange={(e) => setSettingsForm({...settingsForm, publisherId: e.target.value})} placeholder="Publisher ID (ca-pub-...)" />
+                    <input type="text" className="w-full p-3 border-2 rounded font-bold" value={settingsForm.adSlotTop} onChange={(e) => setSettingsForm({...settingsForm, adSlotTop: e.target.value})} placeholder="Top Ad Slot ID" />
+                  </div>
+              </div>
+
+              <button type="submit" className="w-full py-5 bg-green-600 text-white font-black text-xl rounded shadow-2xl uppercase tracking-widest hover:bg-green-700 transition">
+                💾 SAVE ALL SETTINGS
+              </button>
+            </form>
+          </div>
+        )}
+
         {activeTab === 'discover' && (
           <div className="space-y-4">
             <h3 className="text-xl font-black text-[#000080] border-b-4 border-[#ff0000] inline-block mb-4">LATEST JOBS FOUND BY AI</h3>

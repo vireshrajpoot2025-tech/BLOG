@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY as string });
@@ -23,7 +22,6 @@ const JOB_SCHEMA = {
   required: ['title', 'department', 'category', 'shortInfo']
 };
 
-// 1. New function to FIND jobs from Google
 export const searchLatestJobsFromWeb = async () => {
   const ai = getAI();
   const response = await ai.models.generateContent({
@@ -34,7 +32,6 @@ export const searchLatestJobsFromWeb = async () => {
     },
   });
   
-  // Extracting the search results to show as clickable sources
   const links = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map((chunk: any) => ({
     title: chunk.web?.title || 'Job Notification',
     url: chunk.web?.uri || ''
@@ -44,19 +41,6 @@ export const searchLatestJobsFromWeb = async () => {
     text: response.text,
     sources: links
   };
-};
-
-export const generatePostFromTitle = async (title: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `Generate a detailed professional Sarkari Result style notification for: ${title}. Use Hindi/English mix.`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: JOB_SCHEMA
-    }
-  });
-  return JSON.parse(response.text || '{}');
 };
 
 export const syncPostFromLink = async (url: string) => {
@@ -72,11 +56,15 @@ export const syncPostFromLink = async (url: string) => {
   return JSON.parse(response.text || '{}');
 };
 
-export const generateOnlyDescription = async (title: string, dept: string) => {
+export const generatePostFromTitle = async (title: string) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
-    contents: `Write a professional 200-word recruitment summary for the post "${title}" in "${dept}".`,
+    contents: `Generate a detailed professional Sarkari Result style notification for: ${title}. Use Hindi/English mix.`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: JOB_SCHEMA
+    }
   });
-  return response.text || '';
+  return JSON.parse(response.text || '{}');
 };
